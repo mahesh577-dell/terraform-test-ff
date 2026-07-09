@@ -10,6 +10,7 @@ output "connection_name" {
   value = google_sql_database_instance.instance.connection_name
 }
 
-output "db_password_secret" {
-  value = google_secret_manager_secret.db_pass_secret.secret_id
+output "db_password" {
+  value     = random_password.db_password.result
+  sensitive = true
 }
