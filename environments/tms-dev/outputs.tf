@@ -21,3 +21,8 @@ output "cloud_nat" {
 output "firewall_rules" {
   value = module.firewall.firewall_rules
 }
+
+output "artifact_registry_url" {
+  description = "Push/pull images here for tms-dev"
+  value       = module.artifact_registry.registry_url
+}
