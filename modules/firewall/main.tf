@@ -1,10 +1,10 @@
 resource "google_compute_firewall" "allow_internal" {
-  project       = var.project_id
-  name          = "${var.name_prefix}-allow-internal"
-  network       = var.vpc_name
-  description   = "Allow all traffic between VMs within VPC"
-  priority      = 1000
-  direction     = "INGRESS"
+  project     = var.project_id
+  name        = "${var.name_prefix}-allow-internal"
+  network     = var.vpc_name
+  description = "Allow all traffic between VMs within VPC"
+  priority    = 1000
+  direction   = "INGRESS"
   allow { protocol = "tcp" }
   allow { protocol = "udp" }
   allow { protocol = "icmp" }
@@ -12,12 +12,12 @@ resource "google_compute_firewall" "allow_internal" {
 }
 
 resource "google_compute_firewall" "allow_health_check" {
-  project       = var.project_id
-  name          = "${var.name_prefix}-allow-health-check"
-  network       = var.vpc_name
-  description   = "Allow GCP Load Balancer health checks"
-  priority      = 1000
-  direction     = "INGRESS"
+  project     = var.project_id
+  name        = "${var.name_prefix}-allow-health-check"
+  network     = var.vpc_name
+  description = "Allow GCP Load Balancer health checks"
+  priority    = 1000
+  direction   = "INGRESS"
   allow { protocol = "tcp" }
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
 }
@@ -52,23 +52,23 @@ resource "google_compute_firewall" "allow_http_https" {
 }
 
 resource "google_compute_firewall" "deny_all_ingress" {
-  project       = var.project_id
-  name          = "${var.name_prefix}-deny-all-ingress"
-  network       = var.vpc_name
-  description   = "Deny all other ingress traffic"
-  priority      = 65534
-  direction     = "INGRESS"
+  project     = var.project_id
+  name        = "${var.name_prefix}-deny-all-ingress"
+  network     = var.vpc_name
+  description = "Deny all other ingress traffic"
+  priority    = 65534
+  direction   = "INGRESS"
   deny { protocol = "all" }
   source_ranges = ["0.0.0.0/0"]
 }
 
 resource "google_compute_firewall" "allow_all_egress" {
-  project            = var.project_id
-  name               = "${var.name_prefix}-allow-all-egress"
-  network            = var.vpc_name
-  description        = "Allow all outbound traffic"
-  priority           = 1000
-  direction          = "EGRESS"
+  project     = var.project_id
+  name        = "${var.name_prefix}-allow-all-egress"
+  network     = var.vpc_name
+  description = "Allow all outbound traffic"
+  priority    = 1000
+  direction   = "EGRESS"
   allow { protocol = "all" }
   destination_ranges = ["0.0.0.0/0"]
 }
