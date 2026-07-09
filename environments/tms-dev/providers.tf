@@ -9,8 +9,8 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "freightfox-tfstate-shared"
-    prefix = "terraform/shared"
+    bucket = "freightfox-tfstate-tms-dev"
+    prefix = "terraform/tms-dev"
   }
 }
 
