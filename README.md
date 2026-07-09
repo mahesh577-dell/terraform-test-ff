@@ -6,7 +6,7 @@
 freightfox-terraform/
 ├── .circleci/config.yml          ← CircleCI pipeline
 ├── .gitignore
-├── terraform/bootstrap/          ← Run ONCE manually
+├── terraform/bootstrap/          ← Run ONCE manually like enabling API'S , creating state buckets.
 ├── modules/
 │   ├── networking/
 │   │   ├── vpc/                  ← VPC
@@ -24,7 +24,7 @@ freightfox-terraform/
 │   │   ├── bigquery/             ← PLACEHOLDER
 │   │   └── pubsub/               ← PLACEHOLDER
 │   └── security/
-│       ├── secret-manager/       ← PLACEHOLDER
+│       ├── secret-manager/       ← Stores DB passwords
 │       ├── kms/                  ← PLACEHOLDER
 │       ├── iam/                  ← PLACEHOLDER
 │       └── cloud-armor/          ← PLACEHOLDER
