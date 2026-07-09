@@ -8,12 +8,9 @@ terraform {
     }
   }
 
-  # Remote state stored in GCS
-  # Bucket created by terraform/bootstrap
-  # Allows team collaboration and CircleCI access
   backend "gcs" {
-    bucket = "freightfox-tfstate-tms-dev"
-    prefix = "terraform/tms-dev"
+    bucket = "freightfox-tfstate-shared"
+    prefix = "terraform/shared"
   }
 }
 
