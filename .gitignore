@@ -3,22 +3,21 @@
 *.tfstate.backup
 *.tfstate.lock.info
 
-# Terraform cache
+# Terraform cache — never commit!
 .terraform/
 .terraform.lock.hcl
 
-# Secret variable files — never commit!
+# Secret variable files
 *.tfvars
 *.tfvars.json
 
 # Crash logs
 crash.log
 
-# SSH keys & credentials
+# Credentials
 *.pem
 *.key
 circleci-key.json
-/tmp/gcp-key.json
 
 # OS files
 .DS_Store

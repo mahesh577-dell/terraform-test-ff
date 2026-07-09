@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+# MODULE: networking/firewall
+# AWS EQUIVALENT: Security Groups + NACLs
+# ═══════════════════════════════════════════════════════════════
+
 resource "google_compute_firewall" "allow_internal" {
   project     = var.project_id
   name        = "${var.name_prefix}-allow-internal"
@@ -26,7 +31,7 @@ resource "google_compute_firewall" "allow_ssh_iap" {
   project     = var.project_id
   name        = "${var.name_prefix}-allow-ssh-iap"
   network     = var.vpc_name
-  description = "Allow SSH only via Google IAP"
+  description = "Allow SSH only via Google IAP - no public SSH!"
   priority    = 1000
   direction   = "INGRESS"
   allow {
@@ -40,7 +45,7 @@ resource "google_compute_firewall" "allow_http_https" {
   project     = var.project_id
   name        = "${var.name_prefix}-allow-http-https"
   network     = var.vpc_name
-  description = "Allow HTTP/HTTPS from internet"
+  description = "Allow HTTP/HTTPS from internet to tagged VMs"
   priority    = 1000
   direction   = "INGRESS"
   allow {
@@ -55,7 +60,7 @@ resource "google_compute_firewall" "deny_all_ingress" {
   project     = var.project_id
   name        = "${var.name_prefix}-deny-all-ingress"
   network     = var.vpc_name
-  description = "Deny all other ingress"
+  description = "Deny all other ingress - security default"
   priority    = 65534
   direction   = "INGRESS"
   deny { protocol = "all" }

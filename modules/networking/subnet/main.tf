@@ -1,5 +1,14 @@
+# ═══════════════════════════════════════════════════════════════
+# MODULE: networking/subnet
+# AWS EQUIVALENT: AWS Subnet
+#
+# Uses MAP input — more flexible than list
+# Subnets defined in terraform.tfvars per environment
+# ═══════════════════════════════════════════════════════════════
+
 resource "google_compute_subnetwork" "subnet" {
-  for_each                 = var.subnets
+  for_each = var.subnets
+
   name                     = each.key
   ip_cidr_range            = each.value.cidr
   region                   = each.value.region
@@ -8,6 +17,7 @@ resource "google_compute_subnetwork" "subnet" {
   description              = lookup(each.value, "description", "")
   private_ip_google_access = lookup(each.value, "private_ip_google_access", false)
 
+  # Secondary ranges for GKE — optional
   dynamic "secondary_ip_range" {
     for_each = lookup(each.value, "secondary_ranges", [])
     content {
@@ -16,6 +26,7 @@ resource "google_compute_subnetwork" "subnet" {
     }
   }
 
+  # Flow logs — 10% sampling for dev (cost saving)
   log_config {
     aggregation_interval = "INTERVAL_5_MIN"
     flow_sampling        = var.flow_sampling

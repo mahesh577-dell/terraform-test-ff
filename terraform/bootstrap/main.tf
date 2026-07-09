@@ -1,3 +1,9 @@
+# ═══════════════════════════════════════════════════════════════
+# BOOTSTRAP — Run ONCE manually before anything else
+# Uses LOCAL backend — creates the GCS buckets for all envs
+# ═══════════════════════════════════════════════════════════════
+
+# Enable all required GCP APIs
 resource "google_project_service" "apis" {
   for_each = toset([
     "compute.googleapis.com",
@@ -12,6 +18,7 @@ resource "google_project_service" "apis" {
     "dns.googleapis.com",
     "monitoring.googleapis.com",
     "logging.googleapis.com",
+    "cloudkms.googleapis.com",
   ])
 
   project            = var.project_id
@@ -19,6 +26,7 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
+# Create GCS state buckets for all environments
 locals {
   environments = [
     "shared",
@@ -52,11 +60,11 @@ resource "google_storage_bucket" "tfstate" {
   }
 }
 
+# CircleCI Service Account
 resource "google_service_account" "circleci" {
   project      = var.project_id
   account_id   = "circleci-terraform"
   display_name = "CircleCI Terraform Deployer"
-  description  = "Used by CircleCI to run terraform plan and apply"
 }
 
 resource "google_project_iam_member" "circleci_editor" {

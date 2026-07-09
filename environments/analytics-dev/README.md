@@ -1,3 +1,3 @@
 # analytics-dev — PLACEHOLDER
 # CIDR: 10.66.0.0/16
-# No analytics-staging — confirmed with client
+# Copy from environments/tms-dev/ and update

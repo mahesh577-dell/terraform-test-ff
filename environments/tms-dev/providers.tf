@@ -6,11 +6,10 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0"
     }
-  }
-
-  backend "gcs" {
-    bucket = "freightfox-tfstate-tms-dev"
-    prefix = "terraform/tms-dev"
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 

@@ -16,13 +16,13 @@ variable "vpc_name" {
 }
 
 variable "vpc_cidr" {
-  description = "VPC CIDR"
+  description = "VPC CIDR for firewall internal rule"
   type        = string
   default     = "10.60.0.0/16"
 }
 
 variable "subnets" {
-  description = "Map of subnets"
+  description = "Map of subnets — defined in terraform.tfvars"
   type = map(object({
     cidr                     = string
     region                   = string

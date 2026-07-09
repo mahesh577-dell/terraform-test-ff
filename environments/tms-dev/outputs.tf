@@ -19,5 +19,6 @@ output "cloud_sql_private_ip" {
 }
 
 output "db_password_secret" {
-  value = module.db.db_password_secret
+  description = "Secret Manager secret name for DB password"
+  value       = module.db.db_password_secret
 }
