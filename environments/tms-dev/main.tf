@@ -9,107 +9,51 @@ locals {
 }
 
 module "vpc" {
-  source      = "../../modules/vpc"
-  project_id  = var.project_id
-  vpc_name    = var.vpc_name
-  description = "TMS DEV VPC FreightFox 10.60.0.0/16"
+  source     = "../../modules/networking/vpc"
+  project_id = var.project_id
+  vpc_name   = var.vpc_name
 }
 
 module "subnets" {
-  source        = "../../modules/subnet"
+  source        = "../../modules/networking/subnet"
   project_id    = var.project_id
-  region        = var.region
-  vpc_self_link = module.vpc.vpc_self_link
+  vpc_name      = module.vpc.network_name
+  subnets       = var.subnets
   flow_sampling = 0.1
-
-  subnets = [
-    {
-      name        = "tms-dev-public-1a"
-      cidr        = "10.60.1.0/24"
-      description = "Public Zone A Load Balancer Bastion"
-    },
-    {
-      name        = "tms-dev-public-1b"
-      cidr        = "10.60.2.0/24"
-      description = "Public Zone B Load Balancer"
-    },
-    {
-      name        = "tms-dev-private-1a"
-      cidr        = "10.60.3.0/24"
-      description = "Private Zone A GKE Nodes GCE Cloud Run"
-      secondary_ranges = [
-        {
-          range_name    = "tms-dev-pods"
-          ip_cidr_range = "10.60.16.0/20"
-        },
-        {
-          range_name    = "tms-dev-services"
-          ip_cidr_range = "10.60.32.0/20"
-        }
-      ]
-    },
-    {
-      name        = "tms-dev-private-1b"
-      cidr        = "10.60.4.0/24"
-      description = "Private Zone B App servers"
-    },
-    {
-      name        = "tms-dev-data-1a"
-      cidr        = "10.60.5.0/24"
-      description = "Data Zone A Cloud SQL"
-    },
-    {
-      name        = "tms-dev-data-1b"
-      cidr        = "10.60.6.0/24"
-      description = "Data Zone B Cloud SQL"
-    },
-    {
-      name        = "tms-dev-data-1c"
-      cidr        = "10.60.7.0/24"
-      description = "Data Zone C Cloud SQL"
-    },
-  ]
-
-  depends_on = [module.vpc]
 }
 
 module "firewall" {
-  source      = "../../modules/firewall"
+  source      = "../../modules/networking/firewall"
   project_id  = var.project_id
-  vpc_name    = module.vpc.vpc_name
+  vpc_name    = module.vpc.network_name
   vpc_cidr    = var.vpc_cidr
   name_prefix = "tms-dev"
   depends_on  = [module.vpc]
 }
 
-module "cloud_router" {
-  source        = "../../modules/cloud_router"
-  project_id    = var.project_id
-  region        = var.region
-  router_name   = "tms-dev-router"
-  vpc_self_link = module.vpc.vpc_self_link
-  bgp_asn       = 64514
-  depends_on    = [module.vpc]
+resource "google_compute_global_address" "private_ip_alloc" {
+  name          = "${var.vpc_name}-private-ip-alloc"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = module.vpc.network_id
+  project       = var.project_id
 }
 
-module "nat" {
-  source      = "../../modules/nat"
-  project_id  = var.project_id
-  region      = var.region
-  nat_name    = "tms-dev-nat"
-  router_name = module.cloud_router.router_name
-
-  private_subnet_self_links = [
-    module.subnets.subnet_self_links["tms-dev-private-1a"],
-    module.subnets.subnet_self_links["tms-dev-private-1b"],
-  ]
-
-  depends_on = [module.cloud_router, module.subnets]
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = module.vpc.network_id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
 }
 
-module "artifact_registry" {
-  source      = "../../modules/artifact-registry"
-  project_id  = var.project_id
-  region      = var.region
-  environment = var.environment
+module "db" {
+  source                = "../../modules/database/cloud-sql"
+  project_id            = var.project_id
+  region                = var.region
+  instance_name         = "tms-dev-db"
+  vpc_id                = module.vpc.network_id
+  db_peering_connection = google_service_networking_connection.private_vpc_connection.id
+  db_username           = "postgres"
+  db_name               = "dev-services-db"
+  secret_name           = "tms-dev-db-password"
 }

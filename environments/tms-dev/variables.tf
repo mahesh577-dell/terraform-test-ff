@@ -21,8 +21,17 @@ variable "vpc_cidr" {
   default     = "10.60.0.0/16"
 }
 
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
+variable "subnets" {
+  description = "Map of subnets"
+  type = map(object({
+    cidr                     = string
+    region                   = string
+    description              = optional(string, "")
+    private_ip_google_access = optional(bool, false)
+    secondary_ranges = optional(list(object({
+      range_name    = string
+      ip_cidr_range = string
+    })), [])
+  }))
+  default = {}
 }
