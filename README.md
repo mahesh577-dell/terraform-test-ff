@@ -1,6 +1,6 @@
 # FreightFox — Terraform Infrastructure (GCP)
 
-## Structure  
+## Structure
 
 ```
 freightfox-terraform/
